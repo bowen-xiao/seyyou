@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_chat_room"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+
+        <AutoCompleteTextView
+            android:id="@+id/input_autocomplete_text_view"
+            android:hint="输入服务器地址"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/tv_server_status"
+            android:gravity="center"
+            android:text="连接"
+            android:layout_width="60dp"
+            android:layout_height="40dp" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/chat_room_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+        <LinearLayout
+            android:padding="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:background="@drawable/input_edit_text"
+                android:id="@+id/input_text"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp" />
+
+            <Button
+                android:textColor="@color/white"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/send_btn_selector"
+                android:id="@+id/btn_send_msg"
+                android:text="发送"
+                android:layout_width="60dp"
+                android:layout_height="40dp" />
+
+        </LinearLayout>
+</LinearLayout>
