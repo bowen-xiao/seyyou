@@ -8,4 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="book_text_common_style">
+        <item name="android:layout_marginTop">@dimen/common_line_margin</item>
+        <item name="android:background">@color/colorAccent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">@dimen/common_line_with</item>
+        <item name="android:layout_height">@dimen/common_line_height</item>
+    </style>
+
 </resources>

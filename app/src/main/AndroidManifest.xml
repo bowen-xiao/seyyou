@@ -18,7 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".chat.ChatRoomActivity"></activity>
+        <activity android:name=".chat.ChatRoomActivity" />
+        <activity android:name=".ListViewActivity"></activity>
+        <activity android:name=".BookActivity" />
+        <activity android:name=".BookTicketHomeActivity"></activity>
     </application>
 
 </manifest>

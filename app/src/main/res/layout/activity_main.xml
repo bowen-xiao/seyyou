@@ -25,4 +25,17 @@
         android:layout_height="30dp" />
 
 
+    <TextView
+        android:id="@+id/tv_book_tick"
+        android:gravity="center"
+        android:layout_marginBottom="80dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="bottom|right"
+        android:background="#8000"
+        android:text="预订中心"
+        android:textColor="#FFF"
+        android:layout_width="90dp"
+        android:layout_height="30dp" />
+
+
 </FrameLayout>

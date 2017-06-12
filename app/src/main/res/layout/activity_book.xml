@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_book"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bowen.seeyou.BookActivity">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <Button
+            android:gravity="center"
+            android:id="@+id/btn_book_tick"
+            android:text="获取414余票"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp" />
+
+        <TextView
+            android:id="@+id/tv_p38_1"
+            android:text="P38-1"
+            style="@style/book_text_common_style" />
+
+        <TextView
+            android:id="@+id/tv_p414_1"
+            android:text="P414-1"
+            style="@style/book_text_common_style" />
+
+        <TextView
+            android:id="@+id/tv_p414_2"
+            android:text="P414-2"
+            style="@style/book_text_common_style" />
+
+    </LinearLayout>
+
+</LinearLayout>
