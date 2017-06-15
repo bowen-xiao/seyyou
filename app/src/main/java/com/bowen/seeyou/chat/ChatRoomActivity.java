@@ -33,6 +33,9 @@ import butterknife.OnClick;
 
 import static com.bowen.seeyou.R.id.btn_send_msg;
 
+/**
+ * 聊天室页面
+ */
 public class ChatRoomActivity extends Activity {
 
 	@BindView(R.id.input_autocomplete_text_view)
@@ -165,7 +168,6 @@ public class ChatRoomActivity extends Activity {
 		}).show();//在按键响应事件中显示此对话框
 
 	}
-
 
 	//向服务器发送消息
 	private void sendStrMsg() {

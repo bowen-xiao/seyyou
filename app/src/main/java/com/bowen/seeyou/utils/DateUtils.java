@@ -51,4 +51,11 @@ public class DateUtils {
 							 (dayOfMonth <= 9 ? "0" + dayOfMonth : dayOfMonth));
 	}
 
+	//获取当前月的最后一天
+	public static String getCurrentMonthEndDate(){
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DATE,calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+		return getDayInfo2(calendar);
+	}
+
 }

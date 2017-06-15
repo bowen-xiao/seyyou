@@ -42,12 +42,12 @@ public class MainActivity extends AppCompatActivity {
 	/**
 	 * A native method that is implemented by the 'native-lib' native library, which is packaged with this application.
 	 */
-	public native String stringFromJNI();
+	//public native String stringFromJNI();
 
 	// Used to load the 'native-lib' library on application startup.
-	static {
-		System.loadLibrary("native-lib");
-	}
+//	static {
+//		System.loadLibrary("native-lib");
+//	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,16 +84,18 @@ public class MainActivity extends AppCompatActivity {
 		,R.id.tv_book_tick
 	})
 	public void handClick(View view){
-		Intent intent = new Intent(this, BookActivity.class);
+		Intent intent = null;
 		switch (view.getId()){
 			case R.id.tv_in_room:
+				intent = new Intent(this, ListViewActivity.class);
 				break;
 			case R.id.tv_book_tick:
 				intent = new Intent(this, BookTicketHomeActivity.class);
 				break;
-
 		}
-		startActivity(intent);
+		if(intent != null){
+			startActivity(intent);
+		}
 
 //		showNotification();
 	}
