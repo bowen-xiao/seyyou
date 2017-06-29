@@ -76,6 +76,8 @@ public class LogInterceptor implements Interceptor {
                                 response.headers(),
                                 (bodyString)));
 
+        ToolLog.e("bodyString",bodyString);
+
 //        return chain.proceed(newRequest);
         if (response.body() != null) {
             // get完body后原ResponseBody会被清空，需要重新设置body

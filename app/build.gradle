@@ -6,7 +6,7 @@ android {
         release {
             keyAlias 'com.bowen'
             keyPassword 'wenhua'
-            storeFile file('F:/studio_demo/seeyou/bowen')
+            storeFile file('E:/studio_demo/seeyou/bowen')
             storePassword 'wenhua'
         }
     }
@@ -34,11 +34,11 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    externalNativeBuild {
+   /* externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
         }
-    }
+    }*/
 }
 
 dependencies {

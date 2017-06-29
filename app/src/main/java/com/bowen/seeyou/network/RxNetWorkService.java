@@ -33,4 +33,9 @@ public interface RxNetWorkService {
     @POST("bc/phone/data")
     Observable<SearchResult> search(@FieldMap Map<String, Object> filedMap);
 
+    //搜索线路
+    @FormUrlEncoded
+    @POST("order/phone/main/data")
+    Observable<String> getOrderList(@FieldMap Map<String, Object> filedMap);
+
 }

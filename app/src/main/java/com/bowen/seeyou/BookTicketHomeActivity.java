@@ -23,10 +23,12 @@ import com.bowen.seeyou.bean.SearchResult;
 import com.bowen.seeyou.bean.TicketNumberResult;
 import com.bowen.seeyou.network.DataEngine2;
 import com.bowen.seeyou.network.RxNetWorkService;
+import com.bowen.seeyou.utils.CacheUtils;
 import com.bowen.seeyou.utils.DateUtils;
 import com.bowen.seeyou.utils.NotificationUtils;
 import com.bowen.seeyou.utils.ToolLog;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,6 +43,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class BookTicketHomeActivity extends AppCompatActivity {
+
+	public final static String ACCOUNT_PHONE_NUMBER = "account_phone_number";
+	public final static String ACCOUNT_USERID = "account_userid";
+	public final static String ACCOUNT_KEYCODE = "account_keycode";
 
 	@BindView(R.id.et_book_ticket_input)
 	EditText etBookTicketInput;
@@ -60,12 +66,23 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		mActivity = this;
 		setContentView(R.layout.activity_book_ticket_home);
 		ButterKnife.bind(this);
+		initData();
 		initRunable();
 		initView();
 		//第一次进入默认搜索 414
 		search();
 		//设置光标默认到最后面
 		etBookTicketInput.setSelection(etBookTicketInput.getText().length());
+	}
+
+	String mPhoneNumber;
+	String mKeyCode;
+	String mUserId;
+	//初始化数据
+	private void initData(){
+		mPhoneNumber = (CacheUtils.getString(this,BookTicketHomeActivity.ACCOUNT_PHONE_NUMBER,"17051052812"));
+		mKeyCode = (CacheUtils.getString(this,BookTicketHomeActivity.ACCOUNT_KEYCODE,"b20740c94e131278c952dfc62f40a158"));
+		mUserId = (CacheUtils.getString(this,BookTicketHomeActivity.ACCOUNT_USERID,"179792"));
 	}
 
 
@@ -129,11 +146,12 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 				//当前是多少点
 				int hourOfDay = instance.get(Calendar.HOUR_OF_DAY);
 				ToolLog.e("hourOfDay",String.valueOf(hourOfDay));
-				if(hourOfDay >= 12){
+				/*if(hourOfDay >= 12){
 					checkTickNumber();
 				}else{
 					firstBook();
-				}
+				}*/
+				checkTickNumber();
 			}
 		},result);
 	}
@@ -208,7 +226,7 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 
 				   @Override
 				   public void onError(Throwable e) {
-
+						ToolLog.e("err",e.getMessage());
 				   }
 
 				   @Override
@@ -234,9 +252,9 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		 * &lineId=41650&vehTime=0725&beginDate=20170610&endDate=20170630
 		 **/
 		Map<String, Object> params = new HashMap<>();
-		params.put("customerId","179792");
-		params.put("customerName","17051052812");
-		params.put("keyCode","b20740c94e131278c952dfc62f40a158");
+		params.put("customerId",mUserId);
+		params.put("customerName",mPhoneNumber);
+		params.put("keyCode",mKeyCode);
 		params.put("lineId",clickItem.getLineId());
 		params.put("vehTime",clickItem.getVehTime());
 		//开始天数和结束天数
@@ -297,7 +315,7 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 					//周几
 					int dayWeek = instance.get(Calendar.DAY_OF_WEEK);
 					if(ticketIntValue >=1){
-						dateList.add(dayInfo);
+						dateList.add(dayInfo.trim());
 					}
 					//不是周末就加入
 					//					if(dayWeek != Calendar.SATURDAY && dayWeek != Calendar.SUNDAY){
@@ -311,13 +329,23 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 			ToolLog.e("datelist111",dateList.toString());
 			ToolLog.e("price111",String.valueOf(dateList.size() * 5.0f));
 			if(dateList != null && dateList.size() != 0){
+
 				//可以去买票
 				String buyDate = dateList.toString();
+				StringBuilder dateStr = new StringBuilder();
+				for (int i = 0; i < dateList.size(); i++) {
+					String dateInfo = dateList.get(i);
+					dateStr.append(dateInfo.trim());
+					if(i < dateList.size()){
+						dateStr.append(",");
+					}
+				}
 				String price = String.valueOf(dateList.size() * 5.0f);
 				buyDate = buyDate.substring(1,buyDate.length() -1);
 				ToolLog.e("buyDate22",buyDate);
 				ToolLog.e("price22",price);
 				//根据价格购买
+				buyDate = URLDecoder.decode(dateStr.toString().trim());
 				bookTickByDate(buyDate,price);
 			}else{
 				//检查剩余票的数量
@@ -345,9 +373,9 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		 sztNo	362317893
 		 */
 		Map<String, Object> params = new HashMap<>();
-		params.put("userId","179792");
-		params.put("userName","17051052812");
-		params.put("keyCode","b20740c94e131278c952dfc62f40a158");
+		params.put("userId",mUserId);
+		params.put("userName",mPhoneNumber);
+		params.put("keyCode",mKeyCode);
 		//线路ID号
 		params.put("lineId",clickItem.getLineId());
 		//始发站的时间 1755 = 17:55 0725 = 07:25
@@ -424,9 +452,9 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		 * &lineId=41650&vehTime=0725&beginDate=20170610&endDate=20170630
 		 **/
 		Map<String, Object> params = new HashMap<>();
-		params.put("customerId","179792");
-		params.put("customerName","17051052812");
-		params.put("keyCode","b20740c94e131278c952dfc62f40a158");
+		params.put("customerId",mUserId);
+		params.put("customerName",mPhoneNumber);
+		params.put("keyCode",mKeyCode);
 		params.put("lineId",clickItem.getLineId());
 		params.put("vehTime",clickItem.getVehTime());
 		//开始天数和结束天数
@@ -497,8 +525,8 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 			ToolLog.e("datelist111",dateList.toString());
 			ToolLog.e("price111",String.valueOf(dateList.size() * 5.0f));
 			if(dateList != null && dateList.size() != 0){
-				//可以去买票
-				String buyDate = dateList.toString();
+				//可以去买票,需要去掉所有空格
+				String buyDate = dateList.toString().replaceAll(" ","");
 				String price = String.valueOf(dateList.size() * 5.0f);
 				buyDate = buyDate.substring(1,buyDate.length() -1);
 				ToolLog.e("buyDate22",buyDate);
