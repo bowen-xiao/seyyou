@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bowen.seeyou.BookStepOneActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#8000"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:background="@drawable/user_info_from"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/et_book_account_phone_number"
+                style="@style/user_info_input"
+                android:hint="phoneNumber"
+                android:text="17051052812" />
+
+            <EditText
+                android:id="@+id/et_book_account_user_id"
+                style="@style/user_info_input"
+                android:hint="userId"
+                android:text="179792" />
+
+            <EditText
+                android:id="@+id/et_book_account_key_code"
+                style="@style/user_info_input"
+                android:hint="keyCode"
+                android:text="b20740c94e131278c952dfc62f40a158" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:background="@drawable/next_step_bg"
+                android:id="@+id/btn_test_account"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="获取登录信息" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="5dp"
+            android:paddingLeft="15dp"
+            android:background="@drawable/form_title"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:text="日志输出中心"
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+        <ScrollView
+            android:background="@drawable/user_info_from"
+            android:id="@+id/activity_book_step_one"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context="com.bowen.seeyou.BookStepOneActivity">
+
+            <TextView
+                android:id="@+id/tv_book_tick_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:padding="10dp"
+                android:hint="返回的日志...."
+                android:minHeight="50dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white" />
+
+        </ScrollView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_next_book"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="30dp"
+        android:background="@drawable/green_circle_bg"
+        android:text="下一步"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+</FrameLayout>

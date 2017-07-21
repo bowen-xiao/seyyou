@@ -6,10 +6,14 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:layout_margin="15dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:layout_margin="5dp"
         android:gravity="center_vertical"
         android:text="414-1"
         android:padding="5dp"
+        android:textSize="12sp"
+        android:lineSpacingMultiplier="1.2"
         android:id="@+id/tv_line_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

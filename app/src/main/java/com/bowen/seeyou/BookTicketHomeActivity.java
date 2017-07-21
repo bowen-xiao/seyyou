@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.bowen.seeyou.adapter.EBusLineAdapter;
+import com.bowen.seeyou.adapter.LogAdapter;
 import com.bowen.seeyou.bean.BookResult;
 import com.bowen.seeyou.bean.SearchResult;
 import com.bowen.seeyou.bean.TicketNumberResult;
@@ -26,9 +27,11 @@ import com.bowen.seeyou.network.RxNetWorkService;
 import com.bowen.seeyou.utils.CacheUtils;
 import com.bowen.seeyou.utils.DateUtils;
 import com.bowen.seeyou.utils.NotificationUtils;
+import com.bowen.seeyou.utils.ToastUtil;
 import com.bowen.seeyou.utils.ToolLog;
 
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -54,6 +57,12 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 	Button   btnSearchByKeyWord;
 	@BindView(R.id.book_ticket_list)
 	ListView bookTicketList;
+
+	@BindView(R.id.book_ticket_log_list)
+	ListView mLogList;
+	//数据
+	List<String> mLogData = new ArrayList<>();
+	LogAdapter mLogAdapter;
 
 	//上下文对象
 	Activity mActivity;
@@ -90,6 +99,10 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 	EBusLineAdapter lineAdapter;
 	//去初始化配置
 	private void initView() {
+		//日志的参数信息
+		mLogAdapter = new LogAdapter(mLogData);
+		mLogList.setAdapter(mLogAdapter);
+
 		lineAdapter = new EBusLineAdapter(mData);
 		bookTicketList.setAdapter(lineAdapter);
 		bookTicketList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -120,6 +133,7 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 							break;
 						case 2:
 							//捡漏
+							isCheckBook = false;
 							endBook();
 							break;
 					}
@@ -156,10 +170,13 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		},result);
 	}
 
+	boolean isCheckBook = false;
 	//余票抢
 	private void endBook(){
+		mStopBtn.setText(isCheckBook ? "开始" : "暂停");
 		java.util.Random random=new java.util.Random();
 		int result= random.nextInt(2000) + 850;// 返回[0,10)集合中的整数，注意不包括10
+		if(isCheckBook){return;}
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -179,20 +196,44 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		super.onDestroy();
 	}
 
+	@BindView(R.id.stop_check_ticket_number)
+	Button mStopBtn;
+
 	//搜索按钮的点击事件处理
 	@OnClick({
 		R.id.btn_search_by_key_word
+		,R.id.stop_check_ticket_number
+		,R.id.clear_log
 	})
 	public void onClick(View view) {
 		switch (view.getId()){
 			case R.id.btn_search_by_key_word:
 				//处理点击事件
-				NotificationUtils.showNotification(mActivity,100232,"测试","打开Ebus");
+				//NotificationUtils.showNotification(mActivity,100232,"测试","打开Ebus");
 				//跳转到其它应用
 				//jumpToEbus();
 				search();
 				break;
+			case R.id.stop_check_ticket_number:
+				//去检查票
+				if(clickItem == null){
+					ToastUtil.showToast(mActivity,"请选择车次信息");
+					return;
+				}
+				isCheckBook = !isCheckBook;
+				endBook();
+				break;
+			case R.id.clear_log:
+				//清空列表
+				clearLogList();
+				break;
 		}
+	}
+
+	//更新数据
+	private void clearLogList(){
+		mLogData.clear();
+		mLogAdapter.notifyDataSetChanged();
 	}
 
 	private void jumpToEbus(){
@@ -204,10 +245,14 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		}
 	}
 
+	@BindView(R.id.book_ticket_home_search_progress)
+	View mSearch;
+
 	private void search(){
 		//关键字
 		String keyWord = etBookTicketInput.getText().toString().trim();
 		if(TextUtils.isEmpty(keyWord)){return;}
+		mSearch.setVisibility(View.VISIBLE);
 		Map<String, Object> params = new HashMap<>();
 		//lineNo=414&pageNo=1&pageSize=5
 		params.put("lineNo",keyWord);
@@ -221,12 +266,16 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 
 				   @Override
 				   public void onCompleted() {
-
+					   mSearch.setVisibility(View.GONE);
 				   }
 
 				   @Override
 				   public void onError(Throwable e) {
-						ToolLog.e("err",e.getMessage());
+					   mSearch.setVisibility(View.GONE);
+					   if(e != null){
+						   addLogData(e.getMessage());
+					   		ToolLog.e("err",e.getMessage());
+					   }
 				   }
 
 				   @Override
@@ -260,6 +309,10 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		//开始天数和结束天数
 		params.put("beginDate", DateUtils.getBeginDate());
 		params.put("endDate",DateUtils.getEndDate());
+		//请求参数信息
+		String reqMsg = "LineNumber : %s; StartTime : %s; params : %s;";
+		addReqLogData(String.format(reqMsg,clickItem.getLineNo(),clickItem.getStartTime(),params.toString()));
+
 		RxNetWorkService service = DataEngine2.getServiceApiByClass(RxNetWorkService.class);
 		service.checkTick(params)
 			   .subscribeOn(Schedulers.io())
@@ -269,19 +322,26 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 				   @Override
 				   public void onCompleted() {
 						if(!isToBuy){
-							checkTickNumber();
+							firstBook();
 						}
 				   }
 
 				   @Override
 				   public void onError(Throwable e) {
-
+					   //显示错误信息
+					   if(e != null){
+						   addLogData(e.getMessage());
+					   		ToastUtil.showToast(mActivity,e.getMessage());
+					   }
 				   }
 
 				   @Override
 				   public void onNext(TicketNumberResult s) {
 					   //订票成功
 					   Log.e("main", "check result : " + s.toString());
+					   if(s != null){
+						   addLogData(s.toString());
+					   }
 					   if(s != null && s.getReturnCode().equals("500")){
 						   //正确返回
 						   String tickets = s.getReturnData().getTickets();
@@ -346,7 +406,9 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 				ToolLog.e("price22",price);
 				//根据价格购买
 				buyDate = URLDecoder.decode(dateStr.toString().trim());
+				/* 可以下单*/
 				bookTickByDate(buyDate,price);
+				ToastUtil.showToast(mActivity,"可以下单");
 			}else{
 				//检查剩余票的数量
 				checkTickNumber();
@@ -417,7 +479,10 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 
 				   @Override
 				   public void onError(Throwable e) {
-
+					   if(e != null ){
+						   addLogData(e.getMessage());
+					   ToastUtil.showToast(mActivity,e.getMessage());
+					   }
 				   }
 
 				   @Override
@@ -427,6 +492,12 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 						   isScuccess = true;
 						   Toast.makeText(mActivity, "预订成功", Toast.LENGTH_SHORT).show();
 						   showSuccessNotifcaiton();
+					   }else{
+						   //错误信息
+						   ToastUtil.showToast(mActivity,s.getReturnInfo());
+					   }
+					   if(s != null ){
+						   addLogData(s.toString());
 					   }
 				   }
 			   });
@@ -452,6 +523,7 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		 * &lineId=41650&vehTime=0725&beginDate=20170610&endDate=20170630
 		 **/
 		Map<String, Object> params = new HashMap<>();
+		//必须有用户名
 		params.put("customerId",mUserId);
 		params.put("customerName",mPhoneNumber);
 		params.put("keyCode",mKeyCode);
@@ -460,6 +532,10 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		//开始天数和结束天数
 		params.put("beginDate", DateUtils.getDayInfo2(Calendar.getInstance()));
 		params.put("endDate",DateUtils.getCurrentMonthEndDate());
+		//请求信息,添加到日志输出表
+		String reqMsg = "LineNumber : %s; StartTime : %s; params : %s;";
+		addReqLogData(String.format(reqMsg,clickItem.getLineNo(),clickItem.getStartTime(),params.toString()));
+
 		RxNetWorkService service = DataEngine2.getServiceApiByClass(RxNetWorkService.class);
 		service.checkTick(params)
 			   .subscribeOn(Schedulers.io())
@@ -475,13 +551,18 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 
 				   @Override
 				   public void onError(Throwable e) {
-
+					   if(e != null ){
+						   addLogData(e.getMessage());
+					   }
 				   }
 
 				   @Override
 				   public void onNext(TicketNumberResult s) {
 					   //订票成功
 					   Log.e("main", "check result : " + s.toString());
+					   if(s != null ){
+						   addLogData(s.toString());
+					   }
 					   if(s != null && s.getReturnCode().equals("500")){
 						   //正确返回
 						   String tickets = s.getReturnData().getTickets();
@@ -533,10 +614,41 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 				ToolLog.e("price22",price);
 				//根据价格购买
 				bookTickByDate(buyDate,price);
+//				ToastUtil.showToast(mActivity,"捡漏"+buyDate);
 			}else{
 				//检查剩余票的数量
 				endBook();
 			}
+		}
+	}
+
+	private long mLastLogTime ;
+	private void addLogData(String strLog){
+		if(!TextUtils.isEmpty(strLog)){
+			Calendar instance = Calendar.getInstance();
+			if(mLastLogTime == 0 ){
+				mLastLogTime = instance.getTimeInMillis();
+			}
+			//间隔时间
+			long spaceTime = (instance.getTimeInMillis() - mLastLogTime)/10;
+			String dateStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+					.format(instance.getTime());
+			String logMsg = "查询结果; 间隔 : %s毫秒 ; 当前时间: %s \n %s";
+			mLogData.add(String.format(logMsg,spaceTime,dateStr,strLog));
+			mLogAdapter.notifyDataSetChanged();
+			mLogList.smoothScrollToPosition(mLogData.size());
+		}
+	}
+
+	private void addReqLogData(String strLog){
+		if(!TextUtils.isEmpty(strLog)){
+			Calendar instance = Calendar.getInstance();
+			String dateStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+					.format(instance.getTime());
+			String logMsg = "请求参数信息; 当前时间: %s \n 请求参数信息 : %s";
+			mLogData.add(String.format(logMsg,dateStr,strLog));
+			mLogAdapter.notifyDataSetChanged();
+			mLogList.smoothScrollToPosition(mLogData.size());
 		}
 	}
 

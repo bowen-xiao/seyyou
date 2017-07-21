@@ -30,6 +30,7 @@ import com.bowen.seeyou.network.RxNetWorkService;
 import com.bowen.seeyou.utils.CacheUtils;
 import com.bowen.seeyou.utils.DateUtils;
 import com.bowen.seeyou.utils.GetSign;
+import com.bowen.seeyou.utils.ToastUtil;
 import com.bowen.seeyou.utils.ToolLog;
 
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick({
-            R.id.tv_in_room
+              R.id.tv_in_room
             , R.id.tv_book_tick
     })
     public void handClick(View view) {
@@ -345,13 +346,14 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onError(Throwable e) {
                             Log.e("main", "getOrderList onError : " + e.getMessage());
+                            ToastUtil.showToast(mActivity,e.getMessage());
                         }
 
                         @Override
                         public void onNext(String s) {
                             //订票成功
                             Log.e("main", "getOrderList result : " + s.toString());
-                            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+                            ToastUtil.showToast(mActivity,s);
                             if(!TextUtils.isEmpty(s)){
                                 BaseResult result = JSON.parseObject(s, BaseResult.class);
                                 if(result.getReturnCode().equals("500")){
