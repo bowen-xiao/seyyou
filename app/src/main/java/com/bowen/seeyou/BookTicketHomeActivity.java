@@ -642,13 +642,15 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 				mLastLogTime = instance.getTimeInMillis();
 			}
 			//间隔时间
-			long spaceTime = (instance.getTimeInMillis() - mLastLogTime)/10;
+			long spaceTime = (instance.getTimeInMillis() - mLastLogTime);
 			String dateStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 					.format(instance.getTime());
 			String logMsg = "查询结果; 间隔 : %s毫秒 ; 当前时间: %s \n %s";
 			mLogData.add(String.format(logMsg,spaceTime,dateStr,strLog));
 			mLogAdapter.notifyDataSetChanged();
 			mLogList.smoothScrollToPosition(mLogData.size());
+			//重新设置值
+			mLastLogTime = instance.getTimeInMillis();
 		}
 	}
 
