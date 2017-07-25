@@ -119,6 +119,7 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 	SearchResult.ReturnDataBean clickItem;
 	private AlertDialog mSignSelectDialog;
 	private String[] menus = new String[]{"取消", "25号抢下个月", "捡漏当前月"};
+	boolean isGetNexMonthTicket = false;
 	//弹出单选框
 	private void showSignSelectDialog(final SearchResult.ReturnDataBean bean){
 		clickItem = bean;
@@ -129,10 +130,13 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 					switch (which){
 						case 1:
 							//准点
+							isGetNexMonthTicket = true;
+							isCheckBook = false;
 							firstBook();
 							break;
 						case 2:
 							//捡漏
+							isGetNexMonthTicket = false;
 							isCheckBook = false;
 							endBook();
 							break;
@@ -149,10 +153,13 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		mHandler = new Handler();
 	}
 
+	//延时的时间
+	static int fast_time = 680;
 	//准点抢
 	private void firstBook(){
 		java.util.Random random=new java.util.Random();
-		int result= random.nextInt(200) + 150;// 返回[0,10)集合中的整数，注意不包括10
+		int result= random.nextInt(200) + fast_time;// 返回[0,10)集合中的整数，注意不包括10
+		if(isCheckBook){return;}
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -173,9 +180,8 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 	boolean isCheckBook = false;
 	//余票抢
 	private void endBook(){
-		mStopBtn.setText(isCheckBook ? "开始" : "暂停");
 		java.util.Random random=new java.util.Random();
-		int result= random.nextInt(2000) + 850;// 返回[0,10)集合中的整数，注意不包括10
+		int result= random.nextInt(2000) + fast_time * 3;// 返回[0,10)集合中的整数，注意不包括10
 		if(isCheckBook){return;}
 		mHandler.postDelayed(new Runnable() {
 			@Override
@@ -221,7 +227,13 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 					return;
 				}
 				isCheckBook = !isCheckBook;
-				endBook();
+				if(isGetNexMonthTicket){
+					firstBook();
+				}else{
+					endBook();
+				}
+				//重置按钮
+				mStopBtn.setText(isCheckBook ? "开始" : "暂停");
 				break;
 			case R.id.clear_log:
 				//清空列表
@@ -411,7 +423,7 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 				ToastUtil.showToast(mActivity,"可以下单");
 			}else{
 				//检查剩余票的数量
-				checkTickNumber();
+				firstBook();
 			}
 		}
 	}
