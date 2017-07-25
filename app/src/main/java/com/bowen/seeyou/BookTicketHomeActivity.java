@@ -153,8 +153,8 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 		mHandler = new Handler();
 	}
 
-	//延时的时间
-	static int fast_time = 680;
+	//延时的时间,一秒至少可以抢2次
+	static int fast_time = 666;
 	//准点抢
 	private void firstBook(){
 		java.util.Random random=new java.util.Random();
@@ -181,7 +181,7 @@ public class BookTicketHomeActivity extends AppCompatActivity {
 	//余票抢
 	private void endBook(){
 		java.util.Random random=new java.util.Random();
-		int result= random.nextInt(2000) + fast_time * 3;// 返回[0,10)集合中的整数，注意不包括10
+		int result= random.nextInt(2688) + fast_time * 2;// 返回[0,10)集合中的整数，注意不包括10
 		if(isCheckBook){return;}
 		mHandler.postDelayed(new Runnable() {
 			@Override
